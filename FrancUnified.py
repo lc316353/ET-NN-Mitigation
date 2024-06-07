@@ -60,12 +60,12 @@ to run this in parallel on the local pc.
 # Directions of seismometers channel of measurment and mass test channel 
 e_TestMass1 = np.array([1,0,0])
 e_TestMass2 = np.array([0.5,np.sqrt(3)/2,0])
+#e_TestMass1 = np.array([np.sqrt(3)/2,-0.5,0])
+#e_TestMass2 = np.array([np.sqrt(3)/2,0.5,0])
 d_TM_inx = 64.12 # m
 d_TM_iny = 64.12 # m
 d_TM_endx = 536.35 # m
 d_TM_endy = 536.35 # m 
-
-alpha=np.arccos(np.dot(e_TestMass1,e_TestMass2)) 
 
 
 #cavern properties
@@ -344,14 +344,22 @@ def Residual (state, N, freq, SNR, p, mirror="all"):
                 y = cavern_radius*np.cos(phi)
                 z = cavern_radius*np.sin(phi)
             elif dim==2 and "cylinder" in mode.lower() and "2" in mode:
+                e1 = e_TestMass1[0]*(s[:,0]>0)+e_TestMass2[0]*(s[:,0]<=0)
+                e2 = e_TestMass1[1]*(s[:,0]>0)+e_TestMass2[1]*(s[:,0]<=0)
+                e_perp1 = np.cross(e_TestMass1,np.array([0,0,1]))[0]*(s[:,0]>0) - np.cross(e_TestMass2,np.array([0,0,1]))[0]*(s[:,0]<=0)
+                e_perp2 = np.cross(e_TestMass1,np.array([0,0,1]))[1]*(s[:,0]>0) - np.cross(e_TestMass2,np.array([0,0,1]))[1]*(s[:,0]<=0)
                 phi = s[:,0]*np.pi/180*(s[:,0]>0) - s[:,0]*np.pi/180*(s[:,0]<=0)
-                x = s[:,1]*(s[:,0]>0) + (np.cos(alpha)*s[:,1]+np.sin(alpha)*cavern_radius*np.cos(phi))*(s[:,0]<=0)
-                y = cavern_radius*np.cos(phi)*(s[:,0]>0) + (np.sin(alpha)*s[:,1]+np.cos(alpha)*cavern_radius*np.cos(phi))*(s[:,0]<=0)
+                x = s[:,1]*e1 + cavern_radius*np.cos(phi)*e_perp1
+                y= s[:,1]*e2 + cavern_radius*np.cos(phi)*e_perp2
                 z = cavern_radius*np.sin(phi)
             elif dim==3 and "cylinder" in mode.lower() and "2" in mode:
+                e1 = e_TestMass1[0]*(s[:,0]>0)+e_TestMass2[0]*(s[:,0]<=0)
+                e2 = e_TestMass1[1]*(s[:,0]>0)+e_TestMass2[1]*(s[:,0]<=0)
+                e_perp1 = np.cross(e_TestMass1,np.array([0,0,1]))[0]*(s[:,0]>0) - np.cross(e_TestMass2,np.array([0,0,1]))[0]*(s[:,0]<=0)
+                e_perp2 = np.cross(e_TestMass1,np.array([0,0,1]))[1]*(s[:,0]>0) - np.cross(e_TestMass2,np.array([0,0,1]))[1]*(s[:,0]<=0)
                 phi = s[:,0]*np.pi/180*(s[:,0]>0) - s[:,0]*np.pi/180*(s[:,0]<=0)
-                x = s[:,1]*(s[:,0]>0) + (np.cos(alpha)*s[:,1]+np.sin(alpha)*s[:,2]*np.cos(phi))*(s[:,0]<=0)
-                y = s[:,2]*np.cos(phi)*(s[:,0]>0) + (np.sin(alpha)*s[:,1]+np.cos(alpha)*s[:,2]*np.cos(phi))*(s[:,0]<=0)
+                x = s[:,1]*e1 + s[:,2]*np.cos(phi)*e_perp1
+                y= s[:,1]*e2 + s[:,2]*np.cos(phi)*e_perp2
                 z = s[:,2]*np.sin(phi)
             elif dim==3:
                 x = s[:,0]
@@ -514,14 +522,22 @@ def foo(N=10, freq=1, SNR=15, p=0.2, mirror="all", ID=0, savename="Results", wor
                 by = cavern_radius*np.cos(phi)
                 bz = cavern_radius*np.sin(phi)
             elif dim==2 and "cylinder" in mode.lower() and "2" in mode:
+                e1 = e_TestMass1[0]*(best_x[:,0]>0)+e_TestMass2[0]*(best_x[:,0]<=0)
+                e2 = e_TestMass1[1]*(best_x[:,0]>0)+e_TestMass2[1]*(best_x[:,0]<=0)
+                e_perp1 = np.cross(e_TestMass1,np.array([0,0,1]))[0]*(best_x[:,0]>0) - np.cross(e_TestMass2,np.array([0,0,1]))[0]*(best_x[:,0]<=0)
+                e_perp2 = np.cross(e_TestMass1,np.array([0,0,1]))[1]*(best_x[:,0]>0) - np.cross(e_TestMass2,np.array([0,0,1]))[1]*(best_x[:,0]<=0)
                 phi = best_x[:,0]*np.pi/180*(best_x[:,0]>0) - best_x[:,0]*np.pi/180*(best_x[:,0]<=0)
-                bx = best_x[:,1]*(best_x[:,0]>0) + (np.cos(alpha)*best_x[:,1]+np.sin(alpha)*cavern_radius*np.cos(phi))*(best_x[:,0]<=0)
-                by = cavern_radius*np.cos(phi)*(best_x[:,0]>0) + (np.sin(alpha)*best_x[:,1]+np.cos(alpha)*cavern_radius*np.cos(phi))*(best_x[:,0]<=0)
+                bx = best_x[:,1]*e1 + cavern_radius*np.cos(phi)*e_perp1
+                by= best_x[:,1]*e2 + cavern_radius*np.cos(phi)*e_perp2
                 bz = cavern_radius*np.sin(phi)
             elif dim==3 and "cylinder" in mode.lower() and "2" in mode:
+                e1 = e_TestMass1[0]*(best_x[:,0]>0)+e_TestMass2[0]*(best_x[:,0]<=0)
+                e2 = e_TestMass1[1]*(best_x[:,0]>0)+e_TestMass2[1]*(best_x[:,0]<=0)
+                e_perp1 = np.cross(e_TestMass1,np.array([0,0,1]))[0]*(best_x[:,0]>0) - np.cross(e_TestMass2,np.array([0,0,1]))[0]*(best_x[:,0]<=0)
+                e_perp2 = np.cross(e_TestMass1,np.array([0,0,1]))[1]*(best_x[:,0]>0) - np.cross(e_TestMass2,np.array([0,0,1]))[1]*(best_x[:,0]<=0)
                 phi = best_x[:,0]*np.pi/180*(best_x[:,0]>0) - best_x[:,0]*np.pi/180*(best_x[:,0]<=0)
-                bx = best_x[:,1]*(best_x[:,0]>0) + (np.cos(alpha)*best_x[:,1]+np.sin(alpha)*best_x[:,2]*np.cos(phi))*(best_x[:,0]<=0)
-                by = best_x[:,2]*np.cos(phi)*(best_x[:,0]>0) + (np.sin(alpha)*best_x[:,1]+np.cos(alpha)*best_x[:,2]*np.cos(phi))*(best_x[:,0]<=0)
+                bx = best_x[:,1]*e1 + best_x[:,2]*np.cos(phi)*e_perp1
+                by= best_x[:,1]*e2 + best_x[:,2]*np.cos(phi)*e_perp2
                 bz = best_x[:,2]*np.sin(phi)
             elif dim==3:
                 bx = best_x[:,0]
@@ -533,8 +549,8 @@ def foo(N=10, freq=1, SNR=15, p=0.2, mirror="all", ID=0, savename="Results", wor
             ax.scatter(d_TM_endx*e_TestMass1[0],d_TM_endx*e_TestMass1[1],d_TM_endx*e_TestMass1[2],c='r', marker='o')
             ax.scatter(d_TM_iny*e_TestMass2[0],d_TM_iny*e_TestMass2[1],d_TM_iny*e_TestMass2[2],c='r', marker='o')
             ax.scatter(d_TM_endy*e_TestMass2[0],d_TM_endy*e_TestMass2[1],d_TM_endy*e_TestMass2[2],c='r', marker='o')
-            ax.plot([0,d_TM_endx*e_TestMass1[0]], [0,d_TM_endx*e_TestMass1[1]], '--', c = 'k')
-            ax.plot([0,d_TM_endy*e_TestMass2[0]], [0,d_TM_endy*e_TestMass2[1]], '--', c = 'k')
+            ax.plot([-reverse_cavern_length*e_TestMass1[0],cavern_length*e_TestMass1[0]], [-reverse_cavern_length*e_TestMass1[1],cavern_length*e_TestMass1[1]], '--', c = 'k')
+            ax.plot([-reverse_cavern_length*e_TestMass2[0],cavern_length*e_TestMass2[0]], [-reverse_cavern_length*e_TestMass2[1],cavern_length*e_TestMass2[1]], '--', c = 'k')
         
             ax.set_xlabel("x")
             ax.set_ylabel("y")
@@ -648,7 +664,7 @@ def foo(N=10, freq=1, SNR=15, p=0.2, mirror="all", ID=0, savename="Results", wor
 if __name__ == '__main__':
         
         #number of seismometers (At the end it's like having N*3 seismometers since each seismometer is composed by three channels (x,y,z): like having 3 seismometers in N positions)
-        N = 1 #int(argv[1])
+        N = 20 #int(argv[1])
         
         #wiener filter frequency
         freq = 3
