@@ -80,6 +80,7 @@ cavern_radius_max = 20 #m
 mode="volume"                           #"volume", "sphere", "cylinder", "2cylinder", "2cylindervolume"
 optimizationMethod = "particleSwarm"    #"particleSwarm", "differentialEvolution"
 
+directory=""#+"/"
 
 
 if "volume" in mode.lower():
@@ -561,11 +562,11 @@ def foo(N=10, freq=1, SNR=15, p=0.2, mirror="all", ID=0, savename="Results", wor
         # ************************** WRITING FILE **************************
         
         filename = savename+str(ID)+'.txt'
-        f = open(filename,'a+') 
+        f = open(directory+filename,'a+') 
           
         #log all important information and results
         #In principle you can copy this into the I-python-console to see the positions but works only for mode=="volume"
-        f.write('\n \n \n## *************'+optimizationMethod+'-'+ str(ID) + '*************** ##\n \n \n' )
+        f.write('\n \n \n## *************'+optimizationMethod+'-'+mode+": "+str(ID) + '*************** ##\n \n \n' )
         
         f.write('import numpy as np\n')
         f.write('import matplotlib.pyplot as plt\n')
